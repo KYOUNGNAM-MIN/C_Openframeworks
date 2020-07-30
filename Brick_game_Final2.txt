@@ -1,0 +1,517 @@
+#include "ofApp.h"
+#define BALLSIZE 30
+#define BRICKNO 16
+#define BRICKLINE 8
+#define BRICKW 64
+#define BRICKH 40
+#define RACQUETPOS 30
+
+int life = 5;
+int score = 0;
+int xPos, yPos;
+int xPos2, yPos2;
+
+int xDir, yDir;
+int xDir2, yDir2;
+
+int padX, padWidth;
+int ballSpeed = 10;
+int bricks[BRICKLINE][BRICKNO];
+
+//폭탄
+int qcount = BRICKLINE;
+int bombcount = 2;
+
+int rec_start;
+int rec_option = 0;
+
+//시작, 플레이, 정지
+int start = 1;
+int play = 0;
+int finish = 0;
+
+int mapRead(char *inputFile, int buffer[][BRICKNO]) {
+	FILE *fp = NULL;
+	int c;
+	int i, j;
+
+	fopen_s(&fp, inputFile, "r");
+
+	if (fp == NULL) {
+		printf("파일 열기 실패");
+		return 1;
+	}
+	for (j = 0; j < BRICKLINE; j++) {
+		for (i = 0; i < BRICKNO; i++) {
+			if ((c = fgetc(fp)) == EOF) return 0;
+			else buffer[j][i] = c - 48;
+		}
+		fgetc(fp);
+	}
+	fclose(fp);
+
+	return 0;
+}
+
+/*struct bulletType {
+
+int x;
+
+int y;
+
+int visible;
+
+};
+
+void updateCircle2();
+void drawCircle2();
+
+struct bulletType bullet[100];
+
+void initBullet();
+
+void updateBullet();
+
+void addBullet(int x, int y);
+void drawBullet();
+*/
+
+void deleteLine() {
+	int i;
+
+	if (bombcount > 0) {
+		for (i = 0; i < BRICKNO; i++) {
+			bricks[qcount-1][i] = 0;
+		}
+		
+		score += 16;
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::setup() {
+	rec_start = -ofGetWidth();
+	startsound.setMultiPlay(false);
+	startsound.load("maple_lith.mp3");
+	startsound.setVolume(0.5);
+	if (start == 1) {
+		startsound.play();
+	}
+
+	bricksound.setMultiPlay(false);
+	bricksound.load("knock.wav");
+	bricksound.setVolume(1);
+
+	bombsound.setMultiPlay(false);
+	bombsound.load("bomb.wav");
+	bombsound.setVolume(0.3);
+
+
+	ofSetWindowTitle("Brick Break Out Game");
+	ofSetWindowShape(1024, 768);
+	ofSetFrameRate(40);
+
+
+	ofSetLineWidth(1);
+	ofFill();
+
+	xPos = ofGetWidth() / 2;
+	yPos = ofGetHeight() / 2;
+	xDir = yDir = ballSpeed;
+	/*
+	xPos2 = ofGetWidth() / 3;
+	yPos2 = ofGetHeight() / 2;
+	xDir2 = yDir2 = -ballSpeed;
+	*/
+	padX = 30;
+	padWidth = 200;
+
+	/*
+	for (j = 0; j < BRICKLINE; j++) {
+		for (i = 0; i < BRICKNO; i++) {
+			bricks[j][i] = 1;
+		}
+	}
+	
+	for (j = 0; j < BRICKLINE; j++) {
+		for (i = 0; i < BRICKNO; i++) {
+			bricks[j][i] = rand() % 2 + 1;
+		}
+	}
+	*/
+	if (mapRead("map1.txt", bricks) == 1) {
+		printf("File read error!\n");
+		exit();
+	}
+
+	//initBullet();
+
+}
+
+//--------------------------------------------------------------
+void ofApp::update() {
+
+	if (start == 1) {
+		ofBackground(ofColor::white);
+	}
+	if (finish == 1) {
+		ofBackground(ofColor::black);
+		
+	}
+	if (play == 1) {
+		
+		ofBackground(ofColor::forestGreen);
+		
+		xPos += xDir;
+		yPos += yDir;
+
+		xPos2 += xDir2;
+		yPos2 += yDir2;
+
+		padX = ofGetMouseX();
+
+		if (yPos < BRICKH*BRICKLINE + BALLSIZE) {
+			if (bricks[yPos / BRICKH][xPos / BRICKW] == 1) {
+				bricks[yPos / BRICKH][xPos / BRICKW] = 0;
+				score += 1;
+				yDir *= -1;
+				bricksound.play();
+			}
+
+			else if (bricks[yPos / BRICKH][xPos / BRICKW] == 2) {
+				bricks[yPos / BRICKH][xPos / BRICKW] = 1;
+				yDir *= -1;
+				bricksound.play();
+			}
+		}
+
+		if (xPos< BALLSIZE || xPos > ofGetWidth() - BALLSIZE) {
+			xDir *= -1;
+			bricksound.play();
+		}
+
+		if (yPos<BALLSIZE || yPos > ofGetHeight() - RACQUETPOS - BALLSIZE) {
+			if (xPos >= padX && xPos <= padX + padWidth) {
+				yDir *= -1;
+				bricksound.play();
+			}
+		}
+
+		if (yPos < 0) {
+			yDir *= -1;
+		}
+
+		if (yPos > 768) {
+			life -= 1;
+			yPos = ofGetHeight() / 2;
+		}
+
+		if (score == 40) {
+			yPos = ofGetHeight() / 2;
+			qcount = BRICKLINE;
+			bombcount = 2;
+		}
+		if (score == 80) {
+			yPos = ofGetHeight() / 2;
+			qcount = BRICKLINE;
+			bombcount = 2;
+		}
+		if (life == 0) {
+			play = 0;
+			finish = 1;
+		}
+
+		//updateCircle2();
+		if (rec_option == 1) {
+			rec_start+= 100;
+			if (rec_start > ofGetWidth()) {
+				rec_option = 0;
+				rec_start = -ofGetWidth();;
+			}
+		}
+	
+
+		//updateBullet();
+	}
+}
+
+
+//--------------------------------------------------------------
+void ofApp::draw() {
+
+
+	if (start == 1) {
+		ofSetColor(ofColor::black);
+		ofDrawBitmapString("Brick Break!", 450, 300);
+		ofDrawBitmapString("Press s to Start", 430, 400);
+		ofDrawBitmapString("mouse : move", 450, 600);
+		ofDrawBitmapString("Q : bomb(2 times per stage)", 420, 650);
+	}
+	if (finish == 1) {
+		ofSetColor(ofColor::white);
+		ofDrawBitmapString("Game Over", 450, 300);
+		ofDrawBitmapString("Press r to restart", 430, 400);
+	}
+	if (play == 1) {
+		if (score == 40) {
+			mapRead("map2.txt", bricks);
+			score = 41;
+		}
+		if (score == 80) {
+			mapRead("map3.txt", bricks);
+			score = 81;
+		}
+		int i, j;
+
+		if (rec_option == 1) {
+			ofSetColor(ofColor::darkRed);
+			ofRect(rec_start, (qcount - 1)*BRICKH + (BRICKH + 5), ofGetWidth(), 10);
+		}
+		for (j = 0; j < BRICKLINE; j++) {
+			for (i = 0; i < BRICKNO; i++) {
+				if (bricks[j][i] == 2) {
+					ofSetColor(ofColor::red);
+				}
+				else if (bricks[j][i] == 1) {
+					ofSetColor(ofColor::yellow);
+				}
+				else if (bricks[j][i] == 0) {
+					ofSetColor(ofColor::forestGreen);
+				}
+				ofDrawRectRounded(i*BRICKW, j*BRICKH, BRICKW - 5, BRICKH - 5, 7);
+			}
+		}
+		ofSetColor(ofColor::white);
+		ofCircle(xPos, yPos, BALLSIZE);
+
+		ofLine(padX, ofGetHeight() - RACQUETPOS, padX + padWidth, ofGetHeight() - RACQUETPOS);
+
+		if (score >= 10 && score < 20) {
+			ofSetColor(ofColor::forestGreen);
+			ofLine(padX, ofGetHeight() - RACQUETPOS, padX + padWidth, ofGetHeight() - RACQUETPOS);
+		}
+
+		string SCORE = "Score: " + ofToString(score, 1);
+		ofDrawBitmapString(SCORE, 100, 750);
+
+		string LIFE = "Life: " + ofToString(life, 1);
+		ofDrawBitmapString(LIFE, 800, 750);
+		
+		
+
+		//drawCircle2();
+
+		//drawBullet();
+	}
+
+}
+
+//--------------------------------------------------------------
+void ofApp::keyPressed(int key) {
+	if (key == 's') {
+		start = 0;
+		play = 1;
+	}
+
+	if (key == 'r') {
+		finish = 0;
+		start = 1;
+		life = 5;
+	}
+
+	if (key == 'b') {
+		//addBullet(padX + padWidth / 2, ofGetHeight() - RACQUETPOS);
+	}
+	
+	if (key == 'q') {
+		deleteLine();
+		if (bombcount > 0) {
+			bombsound.play();
+			rec_option = 1;
+
+		}
+		qcount --;
+		bombcount --;
+	}
+	
+	if (key == '1') {
+		mapRead("map1.txt", bricks);
+	}
+	if (key == '2') {
+		mapRead("map2.txt", bricks);
+	}
+	if (key == '3') {
+		mapRead("map3.txt", bricks);
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(int key) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseDragged(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseEntered(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseExited(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+
+}
+
+
+
+void drawCircle2() {
+
+	ofSetColor(ofColor::white);
+	ofCircle(xPos2, yPos2, BALLSIZE);
+
+
+}
+
+void updateCircle2() {
+
+	if (yPos2 < BRICKH*BRICKLINE + BALLSIZE) {
+		if (bricks[yPos2 / BRICKH][xPos2 / BRICKW] == 1) {
+			bricks[yPos2 / BRICKH][xPos2 / BRICKW] = 0;
+			score += 1;
+			yDir2 *= -1;
+		}
+
+		if (bricks[yPos2 / BRICKH][xPos2 / BRICKW] == 2) {
+			bricks[yPos2 / BRICKH][xPos2 / BRICKW] = 1;
+			yDir2 *= -1;
+		}
+	}
+	if (xPos2< BALLSIZE || xPos2 > ofGetWidth() - BALLSIZE) {
+		xDir2 *= -1;
+	}
+
+	if (yPos2<BALLSIZE || yPos2 > ofGetHeight() - RACQUETPOS - BALLSIZE) {
+		if (xPos2 >= padX && xPos2 <= padX + padWidth) {
+			yDir2 *= -1;
+		}
+	}
+
+	if (yPos2 < 0) {
+		yDir2 *= -1;
+	}
+
+	if (yPos2 > 768) {
+		life -= 1;
+		yPos2 = ofGetHeight() / 2;
+	}
+
+}
+
+
+/*void initBullet() {
+int i;
+for (i = 0; i<100; i++) {
+
+bullet[i].x = 0;
+
+bullet[i].y = 0;
+
+bullet[i].visible = 0;
+
+}
+}
+// 총알의 좌표 변경 및 벽이나 벽돌과의 충돌 감지
+void updateBullet() {
+int i, x, y;
+
+for (i = 0; i<100; i++) {
+
+if (bullet[i].visible == 1) {
+bullet[i].y -= 10;
+
+x = bullet[i].x;
+y = bullet[i].y;
+if (bricks[y / BRICKH][x / BRICKW] == 1) {
+bricks[y / BRICKH][x / BRICKW] = 0;
+score += 1;
+bullet[i].visible = 0;
+}
+if (bricks[y / BRICKH][x / BRICKW] == 2) {
+bricks[y / BRICKH][x / BRICKW] = 1;
+bullet[i].visible = 0;
+}
+if (bullet[i].y < 0) {
+bullet[i].visible = 0;
+}
+}
+}
+}
+
+
+
+// 키보드가 눌리면 총알 발사
+
+void addBullet(int x, int y) {
+int i;
+for (i = 0; i<100; i++) { // 모든 총알에 대하여…
+
+if (bullet[i].visible == 0) {
+
+bullet[i].x = x;
+
+bullet[i].y = y;
+
+bullet[i].visible = 1;
+
+break;
+}
+
+}
+
+}
+// 모든 총알 중에서 활성화된 총알을 그린다.
+void drawBullet() {
+int i;
+for (i = 0; i<100; i++) {
+
+if (bullet[i].visible) {
+ofSetColor(ofColor::white);
+ofCircle(bullet[i].x, bullet[i].y, 3);
+}
+}
+
+}
+*/
