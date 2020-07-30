@@ -1,0 +1,103 @@
+#include"ofApp.h"
+
+#define BALLSIZE 30
+#define BRICKNO 32
+#define BRICKLINE 5
+#define BRICKW 64
+#define BRICKH 40
+#define RACQUETPOS 30
+
+int score=0;
+int xPos, yPos;
+int xDir, yDir;
+int padX, padWidth;
+int ballSpeed = 10;
+int bricks[BRICKLINE][BRICKNO];
+
+//--------------------------------------------------------------
+void ofApp::setup() {
+	int i, j;
+
+	ofSetWindowTitle("Brcik Break Out Game");
+	ofSetWindowShape(1024, 768);
+	ofSetFrameRate(50);
+	ofBackground(ofColor::white);
+	
+	ofSetLineWidth(1);
+	ofFill();
+
+	xDir = yDir = ballSpeed;
+	xPos = ofGetWidth() / 2;
+	yPos = ofGetHeight() / 2;
+
+	padX = 30;
+	padWidth = 300;
+	for (j = 0; j < BRICKLINE; j++) {
+		for (i = 0; i < BRICKNO; i++) {
+				bricks[j][i] = rand() % 2+1;	
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::update() {
+
+	xPos += xDir;
+	yPos += yDir;
+
+	padX = ofGetMouseX();
+
+	if (yPos < BRICKH*BRICKLINE + BALLSIZE) {
+
+		if (bricks[yPos / BRICKH][xPos / BRICKW] == 1) {
+			bricks[yPos/BRICKH][xPos / BRICKW] = 0;
+			score += 1;
+			yDir *= -1;
+		}
+		if (bricks[yPos / BRICKH][xPos / BRICKW] == 2) {
+			bricks[yPos / BRICKH][xPos / BRICKW] = 1;
+			yDir *= -1;
+		}
+	}
+
+	if (xPos< BALLSIZE || xPos > ofGetWidth() - BALLSIZE) {
+		xDir *= -1;
+	}
+
+	if (yPos<BALLSIZE || yPos > ofGetHeight() - RACQUETPOS - BALLSIZE) {
+		if (xPos >= padX && xPos <= padX + padWidth) {
+			yDir *= -1;
+		}
+
+		
+	}
+	
+
+}
+
+//--------------------------------------------------------------
+void ofApp::draw() {
+	int i,j;
+
+	for (j = 0; j < BRICKLINE;j++){
+		for (i = 0; i < BRICKNO; i++) {
+			if (bricks[j][i] == 2) {
+				ofSetColor(ofColor::red);
+			}
+			else if (bricks[j][i] == 1) {
+				ofSetColor(ofColor::black);
+			}
+			else {
+				ofSetColor(ofColor::white);
+			}
+			ofRect(i*BRICKW, j*BRICKH, BRICKW, BRICKH);
+		}
+	}
+	ofSetColor(ofColor::black);
+	ofCircle(xPos, yPos, BALLSIZE);
+	ofLine(padX, ofGetHeight() - RACQUETPOS, padX + padWidth, ofGetHeight() - RACQUETPOS);
+	
+	string SCORE = "Score: " + ofToString(score,2);
+	ofDrawBitmapString(SCORE, 100, 300);
+
+}

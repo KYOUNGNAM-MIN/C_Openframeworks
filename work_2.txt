@@ -1,0 +1,109 @@
+#include "ofApp.h"
+
+
+int xPos, yPos;
+int xDir, yDir;
+int BALLSIZE = 30;
+//--------------------------------------------------------------
+void ofApp::setup() {
+	ofSetWindowTitle("Ball Drawing Program");
+	ofSetWindowShape(1024, 768);
+	ofSetFrameRate(60);
+	ofBackground(ofColor::white);
+	ofSetColor(ofColor::black);
+	ofSetLineWidth(1.0);
+	ofFill();
+	xDir = 10;
+	yDir = 10;
+	xPos = ofGetWidth() / 2;
+	yPos = ofGetHeight() / 2;
+}
+
+//--------------------------------------------------------------
+void ofApp::update() {
+
+	xPos += xDir;
+	yPos += yDir;
+	if (xPos< BALLSIZE ) {
+		
+		ofSetColor(ofColor::red);
+		xDir *= -1;
+	}
+	if (xPos > ofGetWidth() - BALLSIZE) {
+		
+		ofSetColor(ofColor::green);
+		xDir *= -1;
+	}
+	if (yPos< BALLSIZE ) {
+		BALLSIZE += 5;
+		ofSetColor(ofColor::blue);
+		yDir *= -1;
+	}
+	if (yPos > ofGetHeight() - BALLSIZE) {
+		BALLSIZE -= 5;
+		ofSetColor(ofColor::orange);
+		yDir *= -1;
+	}
+
+}
+
+//--------------------------------------------------------------
+void ofApp::draw() {
+	ofCircle(xPos, yPos, BALLSIZE);
+}
+
+//--------------------------------------------------------------
+void ofApp::keyPressed(int key) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(int key) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseDragged(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseEntered(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseExited(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+
+}
+

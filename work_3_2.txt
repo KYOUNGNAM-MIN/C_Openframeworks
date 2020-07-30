@@ -1,0 +1,171 @@
+#include "ofApp.h"
+
+
+int xPos1, yPos1, xPos2, yPos2, xPos3, yPos3;
+int xDir1, yDir1;
+int xDir2, yDir2;
+int xDir3, yDir3;
+int BALLSIZE1 = 10;
+int	BALLSIZE2 = 15;
+int BALLSIZE3 = 20;
+//--------------------------------------------------------------
+void ofApp::setup() {
+	ofSetWindowTitle("Ball Drawing Program");
+	ofSetWindowShape(1024, 768);
+	ofSetFrameRate(60);
+	ofBackground(ofColor::white);
+	ofSetLineWidth(1.0);
+	ofFill();
+	xDir1 = 5;
+	yDir1 = 10;
+	xDir2 = 15;
+	yDir2 = 10;
+	xDir3 = 20;
+	yDir3 = 10;
+	xPos1 = ofGetWidth() / 2;
+	yPos1 = ofGetHeight() / 2;
+	xPos2 = ofGetWidth() / 3;
+	yPos2 = ofGetHeight() / 3;
+	xPos3 = ofGetWidth() / 4;
+	yPos3 = ofGetHeight() / 4;
+}
+
+//--------------------------------------------------------------
+void ofApp::update() {
+
+	xPos1 += xDir1;
+	yPos1 += yDir1;
+	xPos2 += xDir2;
+	yPos2 += yDir2;
+	xPos3 += xDir3;
+	yPos3 += yDir3;
+	//ball1
+	if (xPos1< BALLSIZE1) {
+	
+		xDir1 *= -1;
+	}
+	if (xPos1 > ofGetWidth() - BALLSIZE1) {
+
+		xDir1 *= -1;
+	}
+	if (yPos1< BALLSIZE1) {
+
+		yDir1 *= -1;
+		BALLSIZE1 += 4;
+	}
+	if (yPos1 > ofGetHeight() - BALLSIZE1) {
+
+		yDir1 *= -1;
+		BALLSIZE1 -= 4;
+	}
+	//ball2
+	if (xPos2< BALLSIZE2) {
+
+		xDir2 *= -1;
+	}
+	if (xPos2 > ofGetWidth() - BALLSIZE2) {
+
+		xDir2 *= -1;
+	}
+	if (yPos2< BALLSIZE2) {
+
+		BALLSIZE2 += 4;
+		yDir2 *= -1;
+	}
+	if (yPos2 > ofGetHeight() - BALLSIZE2) {
+
+		BALLSIZE2 -= 4;
+		yDir2 *= -1;
+	}
+	//ball3
+	if (xPos3< BALLSIZE3) {
+
+		xDir3 *= -1;
+	}
+	if (xPos3 > ofGetWidth() - BALLSIZE3) {
+
+		xDir3 *= -1;
+	}
+	if (yPos3< BALLSIZE3) {
+
+		BALLSIZE3 += 4;
+		yDir3 *= -1;
+	}
+	if (yPos3 > ofGetHeight() - BALLSIZE3) {
+
+		BALLSIZE3 -= 4;
+		yDir3 *= -1;
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::draw() {
+	if (xPos1< BALLSIZE1 || xPos1 > ofGetWidth() - BALLSIZE1 || yPos1< BALLSIZE1 || yPos1 > ofGetHeight() - BALLSIZE1) {
+		ofSetColor(ofRandom(0, 255), ofRandom(255, 50), ofRandom(0, 255), 100);
+	}
+	ofCircle(xPos1, yPos1, BALLSIZE1);
+
+	if (xPos2< BALLSIZE2 || xPos2 > ofGetWidth() - BALLSIZE2 || yPos2< BALLSIZE2 || yPos2 > ofGetHeight() - BALLSIZE2) {
+		ofSetColor(ofRandom(255, 0), ofRandom(120, 50), ofRandom(20, 255), 200);
+	}
+	ofCircle(xPos2, yPos2, BALLSIZE2);
+	if (xPos3< BALLSIZE3 || xPos3 > ofGetWidth() - BALLSIZE3 || yPos3< BALLSIZE3 || yPos3 > ofGetHeight() - BALLSIZE3) {
+		ofSetColor(ofRandom(150, 200), ofRandom(0, 255), ofRandom(255, 0), 150);
+	}
+	ofCircle(xPos3, yPos3, BALLSIZE3);
+}
+
+//--------------------------------------------------------------
+void ofApp::keyPressed(int key) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(int key) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseDragged(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseEntered(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseExited(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+
+}
